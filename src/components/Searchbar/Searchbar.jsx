@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export class Searchbar extends Component {
   state = {
@@ -12,7 +14,7 @@ export class Searchbar extends Component {
     e.preventDefault();
 
     if (this.state.query.trim() === '') {
-      alert('Request is empty!');
+      toast.error('Request is empty!');
       return;
     }
     this.props.onSubmit(this.state.query);
@@ -29,7 +31,7 @@ export class Searchbar extends Component {
           <input
             type="text"
             autocomplete="off"
-            autofocus
+            autoFocus
             placeholder="Search images and photos"
             onChange={this.handleQueryChange}
             value={this.state.query}

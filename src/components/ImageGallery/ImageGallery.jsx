@@ -1,7 +1,7 @@
 import React from 'react';
 import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
 
-export const ImageGallery = ({ images }) => {
+export const ImageGallery = ({ images, openModal }) => {
   return (
     <div>
       <ul>
@@ -11,7 +11,8 @@ export const ImageGallery = ({ images }) => {
               key={id}
               url={webformatURL}
               atl={tags}
-              largeImageURL={largeImageURL}
+              largeImage={largeImageURL}
+              openModal={openModal}
             />
           );
         })}
