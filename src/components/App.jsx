@@ -1,85 +1,76 @@
 import { Component } from 'react';
 import { Searchbar } from './Searchbar/Searchbar';
-import ImagesAPI from 'services/api';
-import { ImageGallery } from './ImageGallery/ImageGallery';
-import { Loader } from './Loader/Loader';
-import { toast } from 'react-toastify';
-import { Modal } from './Modal/Modal';
+import { ImageGallery } from './Imagegallery/Imagegallery';
+import { serviceApi } from './services/ServiceApi';
 import { Button } from './Button/Button';
-
-// 1) Выдать алерт что ошибка,  введите корректное имя
-// 2) добавить кнопку load more , прописать логику что при ее нажатии рендериться еще 12 фоток плюс скролит  вниз.
-// 3) добавить стили
-// 4) добавить проп тайпс
+import { Modal } from './Modal/Modal';
+import { Loader } from './Loader/Loader';
 
 export class App extends Component {
   state = {
     images: [],
-    query: '',
-    loading: false,
+    isLoading: false,
+    isListShown: false,
+    modalShown: null,
     error: '',
-    modalShow: null,
-    page: 1,
-    totalHits: null,
   };
 
-  handleFormSubmit = query => {
-    this.setState({ query });
+  componentDidUpdate = (_, prevState) => {
+    if (
+      prevState.query !== this.state.query ||
+      prevState.page !== this.state.page
+    )
+      this.getImages();
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.query !== this.state.query) {
-      this.fetchGallery();
-    }
-  }
+  getImages = () => {
+    const { page, query } = this.state;
+    this.setState({ isLoading: true });
+    serviceApi(page, query)
+      .then(results => {
+        this.setState(prevState => ({
+          images: [...prevState.images, ...results.data.hits],
+          totalHits: results.data.totalHits,
+        }));
+      })
+      .catch(error => this.setState({ error: error.message }))
+      .finally(() => this.setState({ isLoading: false, isListShown: true }));
+  };
 
-  fetchGallery = async () => {
-    this.setState({ loading: true });
+  onLoadMore = () => {
+    this.setState(prevState => ({ page: prevState.page + 1 }));
+  };
 
-    try {
-      const { data } = await ImagesAPI.getImages(this.state.query);
-
-      this.setState(prevState => ({
-        images: [...prevState.images, ...data.hits],
-      }));
-    } catch (error) {
-      toast.warning('Sorry, server error!');
-    } finally {
-      this.setState({ loading: false });
-    }
+  handleSubmit = query => {
+    this.setState({ images: [], query, page: 1 });
   };
 
   openModal = largeImage => {
-    console.log(largeImage);
-    this.setState({ modalShow: largeImage });
+    this.setState({ modalShown: largeImage });
   };
+
   closeModal = () => {
-    this.setState({ modalShow: null });
+    this.setState({ modalShown: null });
   };
 
   render() {
-    console.log(this.state.modalShow);
+    const { images, isLoading, isListShown, modalShown, totalHits } =
+      this.state;
+
     return (
-      <div>
-        <Searchbar onSubmit={this.handleFormSubmit} />
-        {this.state.loading ? (
-          <Loader />
-        ) : (
-          <ImageGallery images={this.state.images} openModal={this.openModal} />
+      <>
+        <Searchbar onSubmit={this.handleSubmit} />
+        {isLoading && <Loader />}
+        {images.length !== 0 && (
+          <ImageGallery pictures={images} openModal={this.openModal} />
         )}
-        {this.state.modalShow && (
-          <Modal data={this.state.modalShow} onClose={this.closeModal} />
+        {isListShown && !isLoading && images.length < totalHits && (
+          <Button onLoad={this.onLoadMore} />
         )}
-        <Button text="" />
-      </div>
+        {modalShown !== null && (
+          <Modal poster={modalShown} onClose={this.closeModal} />
+        )}
+      </>
     );
   }
 }
-
-// componentDidMount() {
-//   axios
-//     .get(
-//       'https://pixabay.com/api/?q=cat&page=1&key=38326937-a464cd765301aaa81cc195e49&image_type=photo&orientation=horizontal&per_page=12'
-//     )
-//     .then(res => this.setState({ images: res.data.hits }));
-// }

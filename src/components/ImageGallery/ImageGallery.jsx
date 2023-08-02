@@ -1,22 +1,26 @@
-import React from 'react';
-import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
+import PropTypes from 'prop-types';
+import { StyledList } from './Imagegallery.styled';
+import { ImageGalleryItem } from './ImagegalleryItem';
 
-export const ImageGallery = ({ images, openModal }) => {
+export const ImageGallery = ({ pictures, openModal }) => {
   return (
-    <div>
-      <ul>
-        {images.map(({ id, webformatURL, largeImageURL, tags }) => {
-          return (
-            <ImageGalleryItem
-              key={id}
-              url={webformatURL}
-              atl={tags}
-              largeImage={largeImageURL}
-              openModal={openModal}
-            />
-          );
-        })}
-      </ul>
-    </div>
+    <StyledList>
+      {pictures.map(picture => (
+        <ImageGalleryItem
+          key={picture.id}
+          card={picture}
+          openModal={openModal}
+        />
+      ))}
+    </StyledList>
   );
+};
+
+ImageGallery.propTypes = {
+  pictures: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+    })
+  ),
+  openModal: PropTypes.func,
 };

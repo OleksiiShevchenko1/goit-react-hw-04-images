@@ -1,43 +1,52 @@
-import React, { Component } from 'react';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { Component } from 'react';
+import { FaSearch } from 'react-icons/fa';
+import PropTypes from 'prop-types';
+import {
+  Styledbar,
+  SearchForm,
+  Searchbutton,
+  Searchinput,
+} from './Searchbar.styled';
 
 export class Searchbar extends Component {
   state = {
-    query: '',
+    inputStr: '',
   };
 
-  handleQueryChange = e => {
-    this.setState({ query: e.currentTarget.value.toLowerCase() });
+  handleSubmit = ev => {
+    ev.preventDefault();
+    this.props.onSubmit(this.state.inputStr);
   };
-  handleSubmit = e => {
-    e.preventDefault();
 
-    if (this.state.query.trim() === '') {
-      toast.error('Request is empty!');
-      return;
-    }
-    this.props.onSubmit(this.state.query);
-    this.setState({ query: '' });
+  handleOnChange = ev => {
+    this.setState({ inputStr: ev.target.value });
   };
+
   render() {
     return (
-      <header>
-        <form onSubmit={this.handleSubmit}>
-          <button type="submit">
-            <span>Search</span>
-          </button>
+      <Styledbar>
+        <SearchForm>
+          <Searchbutton type="submit" onClick={this.handleSubmit}>
+            <span>
+              <FaSearch />
+              Search
+            </span>
+          </Searchbutton>
 
-          <input
+          <Searchinput
+            className="input"
             type="text"
             autocomplete="off"
             autoFocus
             placeholder="Search images and photos"
-            onChange={this.handleQueryChange}
-            value={this.state.query}
+            onChange={this.handleOnChange}
           />
-        </form>
-      </header>
+        </SearchForm>
+      </Styledbar>
     );
   }
 }
+
+Searchbar.propTypes = {
+  onSubmit: PropTypes.func,
+};
