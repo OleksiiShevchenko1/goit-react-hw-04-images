@@ -6,3 +6,4 @@ export const serviceApi = (page, query) => {
     `https://pixabay.com/api/?key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12&page=${page}&q=${query}}`
   );
 };
+//  перенес в папку SRC
