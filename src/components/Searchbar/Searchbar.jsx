@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 import {
@@ -8,44 +8,76 @@ import {
   Searchinput,
 } from './Searchbar.styled';
 
-export class Searchbar extends Component {
-  state = {
-    inputStr: '',
-  };
+export const Searchbar = ({ onSubmit }) => {
+  const [inputStr, setInputStr] = useState('');
 
-  handleSubmit = ev => {
+  const handleSubmit = ev => {
     ev.preventDefault();
-    this.props.onSubmit(this.state.inputStr);
+    onSubmit(inputStr);
   };
 
-  handleOnChange = ev => {
-    this.setState({ inputStr: ev.target.value });
-  };
+  const handleOnChange = ev => setInputStr(ev.target.value);
 
-  render() {
-    return (
-      <Styledbar>
-        <SearchForm>
-          <Searchbutton type="submit" onClick={this.handleSubmit}>
-            <span>
-              <FaSearch />
-              Search
-            </span>
-          </Searchbutton>
+  return (
+    <Styledbar>
+      <SearchForm>
+        <Searchbutton type="submit" onClick={handleSubmit}>
+          <span>
+            <FaSearch />
+          </span>
+        </Searchbutton>
 
-          <Searchinput
-            className="input"
-            type="text"
-            autocomplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-            onChange={this.handleOnChange}
-          />
-        </SearchForm>
-      </Styledbar>
-    );
-  }
-}
+        <Searchinput
+          className="input"
+          type="text"
+          autocomplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+          onChange={handleOnChange}
+        />
+      </SearchForm>
+    </Styledbar>
+  );
+};
+
+// export class Searchbar extends Component {
+//   state = {
+//     inputStr: '',
+//   };
+
+//   handleSubmit = ev => {
+//     ev.preventDefault();
+//     this.props.onSubmit(this.state.inputStr);
+//   };
+
+//   handleOnChange = ev => {
+//     this.setState({ inputStr: ev.target.value });
+//   };
+
+//   render() {
+//     return (
+//       <Styledbar>
+//         <SearchForm>
+//           <Searchbutton type="submit" onClick={this.handleSubmit}>
+//             <span>
+//               <FaSearch />
+//               Search
+//             </span>
+//           </Searchbutton>
+
+//           <Searchinput
+//             className="input"
+//             type="text"
+//             autocomplete="off"
+//             autoFocus
+//             placeholder="Search images and photos"
+//             onChange={this.handleOnChange}
+//           />
+//         </SearchForm>
+//       </Styledbar>
+//     );
+//   }
+// }
 
 Searchbar.propTypes = {
   onSubmit: PropTypes.func,
